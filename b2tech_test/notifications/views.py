@@ -1,16 +1,23 @@
-from rest_framework import generics, permissions
-from .models        import Boundary, Notification
-from .serializers   import BoundarySerializer, NotificationSerializer
+from rest_framework     import generics, permissions
+from .models            import Boundary, Notification
+from .serializers       import BoundarySerializer, NotificationSerializer
 
-class BoundaryCreateView(generics.CreateAPIView):
+class BoundaryListCreateView(generics.ListCreateAPIView):
     queryset = Boundary.objects.all()
     serializer_class = BoundarySerializer
     permission_classes = [permissions.IsAdminUser]
 
-class NotificationListView(generics.ListAPIView):
+class BoundaryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Boundary.objects.all()
+    serializer_class = BoundarySerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class NotificationListView(generics.ListCreateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+class NotificationDetailView(generics.RetrieveDestroyAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]

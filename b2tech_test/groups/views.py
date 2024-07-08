@@ -1,8 +1,11 @@
 from django.shortcuts           import get_object_or_404
+from django.contrib.auth        import get_user_model
 from rest_framework             import generics, permissions, status
 from rest_framework.response    import Response
 from .models                    import SharedGroup, GroupInvitation
 from .serializers               import SharedGroupSerializer, GroupInvitationSerializer
+
+User = get_user_model()
 
 class GroupCreateView(generics.CreateAPIView):
     queryset = SharedGroup.objects.all()

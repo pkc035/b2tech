@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models                    import Location
 from .serializers               import LocationSerializer
 from groups.models              import SharedGroup
+from notifications.models       import Boundary, Notification
 
 class LocationCreateView(generics.CreateAPIView):
     queryset = Location.objects.all()
@@ -10,7 +11,24 @@ class LocationCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        location = serializer.save(user=self.request.user)
+        self.check_boundaries(location)
+
+    def check_boundaries(self, location):
+        boundaries = Boundary.objects.all()
+        for boundary in boundaries:
+            if self.is_within_boundary(location, boundary):
+                Notification.objects.create(
+                    user=location.user,
+                    boundary=boundary,
+                    message=f"You have entered the restricted area: {boundary.name}"
+                )
+
+    def is_within_boundary(self, location, boundary):
+        from shapely.geometry import Point, Polygon
+        point = Point(float(location.latitude), float(location.longitude))
+        polygon = Polygon(boundary.points)
+        return polygon.contains(point)
 
 class LocationListView(generics.ListAPIView):
     serializer_class = LocationSerializer
