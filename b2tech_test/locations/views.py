@@ -12,6 +12,12 @@ class LocationCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         location = serializer.save(user=self.request.user)
+
+        user_groups = SharedGroup.objects.filter(members=self.request.user)
+        if user_groups.exists():
+            location.shared_group = user_groups.first()
+            location.save()
+
         self.check_boundaries(location)
 
     def check_boundaries(self, location):

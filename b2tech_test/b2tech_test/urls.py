@@ -23,7 +23,5 @@ urlpatterns = [
     path('api/locations/', include('locations.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/groups/', include('groups.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
